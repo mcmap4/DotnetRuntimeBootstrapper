@@ -26,6 +26,9 @@ public class BootstrapperTask : Task
     [Required]
     public string TargetFilePath { get; set; } = default!;
 
+    [Required]
+    public string TargetPlatform { get; set; } = default!;
+
     public string TargetFileName => Path.GetFileName(TargetFilePath);
 
     public string AppHostFilePath => Path.ChangeExtension(TargetFilePath, "exe");
@@ -65,6 +68,7 @@ public class BootstrapperTask : Task
             $"""
             TargetFileName={TargetFileName}
             IsPromptRequired={IsPromptRequired}
+            TargetPlatform={TargetPlatform}
             """;
 
         using var assembly = AssemblyDefinition.ReadAssembly(
@@ -85,6 +89,7 @@ public class BootstrapperTask : Task
         assembly.Write();
 
         Log.LogMessage("Injected configuration into '{0}'.", AppHostFileName);
+        Log.LogMessage("    - Injected configuration:\n>>>>>>>\n{0}\n>>>>>>>", configuration);
     }
 
     private void InjectManifest()

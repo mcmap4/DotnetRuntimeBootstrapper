@@ -11,6 +11,7 @@
     <Version>1.2.3</Version>
     <ApplicationIcon>../favicon.ico</ApplicationIcon>
     <GenerateBootstrapperOnBuild>true</GenerateBootstrapperOnBuild>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>

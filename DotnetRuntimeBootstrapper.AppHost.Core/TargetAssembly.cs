@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using DotnetRuntimeBootstrapper.AppHost.Core.Dotnet;
+using DotnetRuntimeBootstrapper.AppHost.Core.Platform;
 using DotnetRuntimeBootstrapper.AppHost.Core.Prerequisites;
 using DotnetRuntimeBootstrapper.AppHost.Core.Utils.Extensions;
 
@@ -14,16 +16,22 @@ public partial class TargetAssembly
 
     public string Name { get; }
 
-    public TargetAssembly(string filePath, string name)
+    public string PlatformTarget { get; }
+
+    public bool Is32BitTarget => !string.IsNullOrEmpty(PlatformTarget) &&
+            PlatformTarget.Equals(ProcessorArchitecture.X86.ToString(), StringComparison.InvariantCultureIgnoreCase);
+
+    public TargetAssembly(string filePath, string name, string platformTarget)
     {
         FilePath = filePath;
         Name = name;
+        PlatformTarget = platformTarget;
     }
 
     private DotnetRuntime[] GetRuntimes()
     {
         var configFilePath = Path.ChangeExtension(FilePath, "runtimeconfig.json");
-        var runtimes = DotnetRuntime.GetAllTargets(configFilePath).ToList();
+        var runtimes = DotnetRuntime.GetAllTargets(configFilePath, PlatformTarget).ToList();
 
         // Desktop runtimes already include the base runtimes, so we can filter out unnecessary targets
         // https://github.com/Tyrrrz/DotnetRuntimeBootstrapper/issues/30
@@ -66,14 +74,14 @@ public partial class TargetAssembly
 
     public int Run(string[] args)
     {
-        using var host = DotnetHost.Load();
+        using var host = DotnetHost.Load(true /*Is32BitTarget*/);
         return host.Run(FilePath, args);
     }
 }
 
 public partial class TargetAssembly
 {
-    public static TargetAssembly Resolve(string filePath)
+    public static TargetAssembly Resolve(string filePath, string platformTarget)
     {
         if (!File.Exists(filePath))
             throw new FileNotFoundException($"Could not find target assembly '{Path.GetFileName(filePath)}'.");
@@ -82,6 +90,6 @@ public partial class TargetAssembly
             FileVersionInfo.GetVersionInfo(filePath).ProductName?.NullIfEmptyOrWhiteSpace() ??
             Path.GetFileNameWithoutExtension(filePath);
 
-        return new TargetAssembly(filePath, name);
+        return new TargetAssembly(filePath, name, platformTarget);
     }
 }

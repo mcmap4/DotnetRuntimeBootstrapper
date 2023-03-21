@@ -21,7 +21,7 @@ internal class DotnetRuntimePrerequisite : IPrerequisite
         _ => _runtime.Name
     };
 
-    public string DisplayName => $".NET Runtime ({ShortName}) v{_runtime.Version}";
+    public string DisplayName => $".NET Runtime ({ShortName}) v{_runtime.Version} ({_runtime.PlatformTarget})";
 
     public DotnetRuntimePrerequisite(DotnetRuntime runtime) => _runtime = runtime;
 
@@ -31,7 +31,7 @@ internal class DotnetRuntimePrerequisite : IPrerequisite
     {
         try
         {
-            return DotnetRuntime.GetAllInstalled().Any(_runtime.IsSupersededBy);
+            return DotnetRuntime.GetAllInstalled(_runtime.PlatformTarget, _runtime.Is32Bit).Any(_runtime.IsSupersededBy);
         }
         catch (Exception ex) when (ex is DirectoryNotFoundException or FileNotFoundException)
         {

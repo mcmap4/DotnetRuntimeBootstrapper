@@ -127,7 +127,8 @@ public abstract class BootstrapperBase
                     Path.GetDirectoryName(EnvironmentEx.ProcessPath) ??
                     AppDomain.CurrentDomain.BaseDirectory,
                     Configuration.Instance.TargetFileName
-                )
+                ),
+                Configuration.Instance.TargetPlatform
             );
 
             return Run(targetAssembly, args);

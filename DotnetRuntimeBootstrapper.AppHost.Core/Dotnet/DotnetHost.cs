@@ -123,6 +123,8 @@ internal partial class DotnetHost : IDisposable
 
     public int Run(string targetFilePath, string[] args)
     {
+        Console.WriteLine($"DotnetHost.Run(): targetFIlePath={targetFilePath}");
+
         var handle = Initialize(targetFilePath, args);
 
         try
@@ -140,33 +142,38 @@ internal partial class DotnetHost : IDisposable
 
 internal partial class DotnetHost
 {
-    private static string GetHostResolverFilePath()
+    private static string GetHostResolverFilePath(bool is32BitTarget = false)
     {
         // Host resolver (hostfxr) location strategy:
         // https://github.com/dotnet/runtime/blob/57bfe474518ab5b7cfe6bf7424a79ce3af9d6657/src/native/corehost/fxr_resolver.cpp#L55-L135
         // 1. Find the hostfxr directory containing versioned subdirectories
         // 2. Get the hostfxr.dll from the subdirectory with the highest version number
 
-        var hostResolverRootDirPath = PathEx.Combine(DotnetInstallation.GetDirectoryPath(), "host", "fxr");
+        var hostResolverRootDirPath = PathEx.Combine(DotnetInstallation.GetDirectoryPath(is32BitTarget), "host", "fxr");
         if (!Directory.Exists(hostResolverRootDirPath))
             throw new DirectoryNotFoundException("Could not find directory containing hostfxr.dll.");
+
+        Console.WriteLine($"GetHostResolverFilePath(): is32BitTarget={is32BitTarget}, hostResolverRootDirPath={hostResolverRootDirPath}");
 
         var hostResolverFilePath = (
             from dirPath in Directory.GetDirectories(hostResolverRootDirPath)
             let version = VersionEx.TryParse(Path.GetFileName(dirPath))
             let filePath = Path.Combine(dirPath, "hostfxr.dll")
             where version is not null
+            where version.Major < 7
             where File.Exists(filePath)
             orderby version descending
             select filePath
         ).FirstOrDefault();
+
+        Console.WriteLine($"GetHostResolverFilePath(): hostResolverFilePath={hostResolverFilePath}");
 
         return
             hostResolverFilePath ??
             throw new FileNotFoundException("Could not find hostfxr.dll.");
     }
 
-    public static DotnetHost Load() => new(
-        NativeLibrary.Load(GetHostResolverFilePath())
+    public static DotnetHost Load(bool is32BitTarget = false) => new(
+        NativeLibrary.Load(GetHostResolverFilePath(is32BitTarget))
     );
 }

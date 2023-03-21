@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using DotnetRuntimeBootstrapper.AppHost.Core.Platform;
 using DotnetRuntimeBootstrapper.AppHost.Core.Utils;
 using DotnetRuntimeBootstrapper.AppHost.Core.Utils.Extensions;
 using QuickJson;
@@ -13,6 +14,8 @@ internal partial class DotnetRuntime
 
     public Version Version { get; }
 
+    public string PlatformTarget { get; }
+
     public bool IsBase =>
         string.Equals(Name, "Microsoft.NETCore.App", StringComparison.OrdinalIgnoreCase);
 
@@ -22,10 +25,14 @@ internal partial class DotnetRuntime
     public bool IsAspNet =>
         string.Equals(Name, "Microsoft.AspNetCore.App", StringComparison.OrdinalIgnoreCase);
 
-    public DotnetRuntime(string name, Version version)
+    public bool Is32Bit => !string.IsNullOrEmpty(PlatformTarget) &&
+            PlatformTarget.Equals(ProcessorArchitecture.X86.ToString(), StringComparison.InvariantCultureIgnoreCase);
+
+    public DotnetRuntime(string name, Version version, string platformTarget = null)
     {
         Name = name;
         Version = version;
+        PlatformTarget = platformTarget;
     }
 
     public bool IsSupersededBy(DotnetRuntime other) =>
@@ -36,9 +43,9 @@ internal partial class DotnetRuntime
 
 internal partial class DotnetRuntime
 {
-    public static DotnetRuntime[] GetAllInstalled()
+    public static DotnetRuntime[] GetAllInstalled(string platformTarget, bool is32BitTarget)
     {
-        var sharedDirPath = Path.Combine(DotnetInstallation.GetDirectoryPath(), "shared");
+        var sharedDirPath = Path.Combine(DotnetInstallation.GetDirectoryPath(is32BitTarget), "shared");
         if (!Directory.Exists(sharedDirPath))
             throw new DirectoryNotFoundException("Could not find directory containing .NET runtime binaries.");
 
@@ -48,19 +55,19 @@ internal partial class DotnetRuntime
             from runtimeVersionDirPath in Directory.GetDirectories(runtimeDirPath)
             let version = VersionEx.TryParse(Path.GetFileName(runtimeVersionDirPath))
             where version is not null
-            select new DotnetRuntime(name, version)
+            select new DotnetRuntime(name, version, platformTarget)
         ).ToArray();
     }
 
-    public static DotnetRuntime[] GetAllTargets(string runtimeConfigFilePath)
+    public static DotnetRuntime[] GetAllTargets(string runtimeConfigFilePath, string platformTarget)
     {
-        static DotnetRuntime ParseRuntime(JsonNode json)
+        static DotnetRuntime ParseRuntime(JsonNode json, string platformTarget)
         {
             var name = json.TryGetChild("name")?.TryGetString();
             var version = json.TryGetChild("version")?.TryGetString()?.Pipe(VersionEx.TryParse);
 
             return !string.IsNullOrEmpty(name) && version is not null
-                ? new DotnetRuntime(name, version)
+                ? new DotnetRuntime(name, version, platformTarget)
                 : throw new ApplicationException("Could not parse runtime info from runtime config.");
         }
 
@@ -74,7 +81,7 @@ internal partial class DotnetRuntime
                 .TryGetChild("runtimeOptions")?
                 .TryGetChild("frameworks")?
                 .EnumerateChildren()
-                .Select(ParseRuntime)
+                .Select(n => ParseRuntime(n, platformTarget))
                 .ToArray() ??
 
             // Single target
@@ -82,7 +89,7 @@ internal partial class DotnetRuntime
                 .TryGetChild("runtimeOptions")?
                 .TryGetChild("framework")?
                 .ToSingletonEnumerable()
-                .Select(ParseRuntime)
+                .Select(n => ParseRuntime(n, platformTarget))
                 .ToArray() ??
 
             throw new ApplicationException("Could not resolve target runtime from runtime config.");

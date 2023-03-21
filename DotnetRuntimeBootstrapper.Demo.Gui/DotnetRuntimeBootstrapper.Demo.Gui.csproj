@@ -13,6 +13,7 @@
     <ApplicationIcon>../favicon.ico</ApplicationIcon>
     <ApplicationManifest>Manifest.xml</ApplicationManifest>
     <GenerateBootstrapperOnBuild>true</GenerateBootstrapperOnBuild>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>

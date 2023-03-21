@@ -23,12 +23,15 @@
       <BootstrapperVariant Condition="'$(BootstrapperVariant)' == '' AND '$(OutputType)' == 'WinExe'">GUI</BootstrapperVariant>
       <BootstrapperVariant Condition="'$(BootstrapperVariant)' == ''">GUI</BootstrapperVariant>
       <BootstrapperPromptRequired Condition="'$(BootstrapperPromptRequired)' == ''">true</BootstrapperPromptRequired>
+      <BootstrapperPlatform Condition="'$(PlatformTarget)' == ''">AnyCPU</BootstrapperPlatform>
+      <BootstrapperPlatform Condition="'$(PlatformTarget)' != ''">$(PlatformTarget)</BootstrapperPlatform>
     </PropertyGroup>
 
     <BootstrapperTask
       Variant="$(BootstrapperVariant)"
       IsPromptRequired="$(BootstrapperPromptRequired)"
-      TargetFilePath="$(TargetPath)" />
+      TargetFilePath="$(TargetPath)"
+      TargetPlatform="$(BootstrapperPlatform)"/>
   </Target>
 
   <Target
@@ -40,12 +43,15 @@
       <BootstrapperVariant Condition="'$(BootstrapperVariant)' == '' AND '$(OutputType)' == 'WinExe'">GUI</BootstrapperVariant>
       <BootstrapperVariant Condition="'$(BootstrapperVariant)' == ''">GUI</BootstrapperVariant>
       <BootstrapperPromptRequired Condition="'$(BootstrapperPromptRequired)' == ''">true</BootstrapperPromptRequired>
+      <BootstrapperPlatform Condition="'$(PlatformTarget)' == ''">AnyCPU</BootstrapperPlatform>
+      <BootstrapperPlatform Condition="'$(PlatformTarget)' != ''">$(PlatformTarget)</BootstrapperPlatform>
     </PropertyGroup>
 
     <BootstrapperTask
       Variant="$(BootstrapperVariant)"
       IsPromptRequired="$(BootstrapperPromptRequired)"
-      TargetFilePath="$([System.IO.Path]::Combine('$(ProjectDir)', '$(PublishDir)/$(AssemblyName).dll'))" />
+      TargetFilePath="$([System.IO.Path]::Combine('$(ProjectDir)', '$(PublishDir)/$(AssemblyName).dll'))"
+      TargetPlatform="$(BootstrapperPlatform)" />
   </Target>
 
 </Project>
