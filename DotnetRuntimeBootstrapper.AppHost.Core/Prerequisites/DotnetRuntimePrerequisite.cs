@@ -47,6 +47,9 @@ internal class DotnetRuntimePrerequisite : IPrerequisite
             $"{_runtime.Version.ToString(2)}/releases.json"
         );
 
+        string targetArch = string.Equals(_runtime.PlatformTarget, "x86", StringComparison.OrdinalIgnoreCase) ? "x86" :
+            OperatingSystemEx.ProcessorArchitecture.GetMoniker();
+
         // Find the installer download URL applicable for the current system
         return
             Json
@@ -66,7 +69,7 @@ internal class DotnetRuntimePrerequisite : IPrerequisite
                 .Where(f =>
                     string.Equals(
                         f.TryGetChild("rid")?.TryGetString(),
-                        "win-" + OperatingSystemEx.ProcessorArchitecture.GetMoniker(),
+                        "win-" + targetArch,
                         StringComparison.OrdinalIgnoreCase
                     )
                 )

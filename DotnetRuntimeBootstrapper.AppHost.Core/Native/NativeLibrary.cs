@@ -46,10 +46,13 @@ internal partial class NativeLibrary
 {
     public static NativeLibrary Load(string filePath)
     {
+#if DEBUG
         Console.WriteLine($"NativeLibrary.Load(): loading native library from: {filePath}");
+#endif
         var handle = NativeMethods.LoadLibrary(filePath);
-        //var handle = NativeMethods.LoadLibraryEx(filePath, (IntPtr)0, NativeMethods.LoadLibraryFlags.LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | NativeMethods.LoadLibraryFlags.LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+#if DEBUG
         Console.WriteLine($"NativeLibrary.Load(): LoadLibrary() returned: {handle}");
+#endif
         return handle != IntPtr.Zero
             ? new NativeLibrary(handle)
             : throw new Win32Exception();

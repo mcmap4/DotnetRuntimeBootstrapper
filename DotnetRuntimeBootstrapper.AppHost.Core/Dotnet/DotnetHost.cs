@@ -123,7 +123,9 @@ internal partial class DotnetHost : IDisposable
 
     public int Run(string targetFilePath, string[] args)
     {
-        Console.WriteLine($"DotnetHost.Run(): targetFIlePath={targetFilePath}");
+#if DEBUG
+        Console.WriteLine($"DotnetHost.Run(): targetFilePath={targetFilePath}");
+#endif
 
         var handle = Initialize(targetFilePath, args);
 
@@ -153,20 +155,23 @@ internal partial class DotnetHost
         if (!Directory.Exists(hostResolverRootDirPath))
             throw new DirectoryNotFoundException("Could not find directory containing hostfxr.dll.");
 
+#if DEBUG
         Console.WriteLine($"GetHostResolverFilePath(): is32BitTarget={is32BitTarget}, hostResolverRootDirPath={hostResolverRootDirPath}");
+#endif
 
         var hostResolverFilePath = (
             from dirPath in Directory.GetDirectories(hostResolverRootDirPath)
             let version = VersionEx.TryParse(Path.GetFileName(dirPath))
             let filePath = Path.Combine(dirPath, "hostfxr.dll")
             where version is not null
-            where version.Major < 7
             where File.Exists(filePath)
             orderby version descending
             select filePath
         ).FirstOrDefault();
 
+#if DEBUG
         Console.WriteLine($"GetHostResolverFilePath(): hostResolverFilePath={hostResolverFilePath}");
+#endif
 
         return
             hostResolverFilePath ??

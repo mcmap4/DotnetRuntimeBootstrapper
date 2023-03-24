@@ -56,9 +56,6 @@ internal static class NativeMethods
     [DllImport(Kernel32, CharSet = CharSet.Auto, SetLastError = true)]
     public static extern IntPtr LoadLibrary(string lpFileName);
 
-    [DllImport(Kernel32, CharSet = CharSet.Auto, SetLastError = true)]
-    public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hReservedNull, LoadLibraryFlags dwFlags);
-
     [DllImport(Kernel32, SetLastError = true)]
     public static extern bool FreeLibrary(IntPtr hModule);
 
