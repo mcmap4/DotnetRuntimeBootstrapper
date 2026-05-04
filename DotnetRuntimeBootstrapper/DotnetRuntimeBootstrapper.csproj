@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
     <IsPackable>true</IsPackable>
@@ -60,22 +60,22 @@
 
   <!-- Embed apphost files inside the task assembly -->
   <ItemGroup>
-    <EmbeddedResource Include="../DotnetRuntimeBootstrapper.AppHost.Cli/bin/$(Configuration)/net35/DotnetRuntimeBootstrapper.AppHost.Cli.exe">
+    <EmbeddedResource Include="../DotnetRuntimeBootstrapper.AppHost.Cli/bin/$(Configuration)/net481/DotnetRuntimeBootstrapper.AppHost.Cli.exe">
       <Link>AppHost.Cli.exe</Link>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Visible>false</Visible>
     </EmbeddedResource>
-    <EmbeddedResource Include="../DotnetRuntimeBootstrapper.AppHost.Cli/bin/$(Configuration)/net35/DotnetRuntimeBootstrapper.AppHost.Cli.exe.config">
+    <EmbeddedResource Include="../DotnetRuntimeBootstrapper.AppHost.Cli/bin/$(Configuration)/net481/DotnetRuntimeBootstrapper.AppHost.Cli.exe.config">
       <Link>AppHost.Cli.exe.config</Link>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Visible>false</Visible>
     </EmbeddedResource>
-    <EmbeddedResource Include="../DotnetRuntimeBootstrapper.AppHost.Gui/bin/$(Configuration)/net35/DotnetRuntimeBootstrapper.AppHost.Gui.exe">
+    <EmbeddedResource Include="../DotnetRuntimeBootstrapper.AppHost.Gui/bin/$(Configuration)/net481/DotnetRuntimeBootstrapper.AppHost.Gui.exe">
       <Link>AppHost.Gui.exe</Link>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Visible>false</Visible>
     </EmbeddedResource>
-    <EmbeddedResource Include="../DotnetRuntimeBootstrapper.AppHost.Gui/bin/$(Configuration)/net35/DotnetRuntimeBootstrapper.AppHost.Gui.exe.config">
+    <EmbeddedResource Include="../DotnetRuntimeBootstrapper.AppHost.Gui/bin/$(Configuration)/net481/DotnetRuntimeBootstrapper.AppHost.Gui.exe.config">
       <Link>AppHost.Gui.exe.config</Link>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Visible>false</Visible>
@@ -118,6 +118,7 @@
     <GetTargetPathDependsOn>
       $(GetTargetPathDependsOn);GetDependencyTargetPaths
     </GetTargetPathDependsOn>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <Target Name="GetDependencyTargetPaths">

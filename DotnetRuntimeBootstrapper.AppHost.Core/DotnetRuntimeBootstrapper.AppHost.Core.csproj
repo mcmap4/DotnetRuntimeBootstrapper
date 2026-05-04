@@ -1,6 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net35</TargetFramework>
+    <TargetFramework>net481</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -8,6 +8,7 @@
     <PackageReference Include="PolyShim" PrivateAssets="all" />
     <PackageReference Include="PowerKit" PrivateAssets="all" />
     <PackageReference Include="QuickJson" PrivateAssets="all" />
+    <PackageReference Include="System.IO.Compression" />
   </ItemGroup>
 
   <ItemGroup>
